@@ -23,7 +23,7 @@
     "item": "ocd_backend.items.notubiz_meeting.Meeting",
     "enrichers": [
       [
-        "ocd_backend.enrichers.media_enricher.static.StaticMediaEnricher",
+        "ocd_backend.enrichers.media_enricher.legacy.StaticMediaEnricher",
         {
           "tasks": [
             "file_to_text"
@@ -50,7 +50,7 @@
     "item": "ocd_backend.items.notubiz_meetingitem.MeetingItem",
     "enrichers": [
       [
-        "ocd_backend.enrichers.media_enricher.static.StaticMediaEnricher",
+        "ocd_backend.enrichers.media_enricher.legacy.StaticMediaEnricher",
         {
           "tasks": [
             "file_to_text"
