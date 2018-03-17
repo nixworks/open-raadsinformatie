@@ -1,4 +1,4 @@
-from dateutil import parser
+from datetime import datetime
 from hashlib import sha1
 from ocd_backend.items.popolo import EventItem
 from ocd_backend.extractors import HttpRequestMixin
@@ -31,12 +31,26 @@ class Meeting(EventItem, HttpRequestMixin):
 
         combined_index_data['id'] = unicode(self.get_object_id())
         combined_index_data['hidden'] = self.source_definition['hidden']
-        combined_index_data['classification'] = u'Agenda'
-        combined_index_data['location'] = self.original_item['location']
 
-        combined_index_data['start_date'] = parser.parse(
-            '%s %s' % (self.original_item['date'], self.original_item['time'])
-        )
+        combined_index_data['name'] = self.original_item.get('title')
+        combined_index_data['description'] = self.original_item.get('description')
+        combined_index_data['classification'] = u'Agenda'
+        combined_index_data['location'] = self.original_item.get('location')
+
+        # todo needs to be changed to ORI identifier
+        combined_index_data['organization_id'] = self.original_item.get('committeecode')
+
+        if self.original_item.get('time'):
+            combined_index_data['start_date'] = datetime.strptime(
+                '%s %s' % (self.original_item['date'], self.original_item['time']),
+                '%Y%m%d %H:%M'
+            )
+
+        if self.original_item.get('endtime') and self.original_item['endtime'] != '0':
+            combined_index_data['end_date'] = datetime.strptime(
+                '%s %s' % (self.original_item['date'], self.original_item['endtime']),
+                '%Y%m%d %H:%M'
+            )
 
         combined_index_data['children'] = [
             MeetingItem.get_meetingitem_id(mi['apid']) for mi in self.original_item['points']
