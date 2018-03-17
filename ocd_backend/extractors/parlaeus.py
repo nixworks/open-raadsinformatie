@@ -58,9 +58,11 @@ class ParlaeusMeetingitemsExtractor(ParlaeusMeetingsExtractor, HttpRequestMixin)
 
     def run(self):
         resp = self.http_session.get(
-            '%s?rid=%s&fn=agenda_list' % (
+            '%s?rid=%s&fn=agenda_list&since=%s&until=%s' % (
                 self.base_url,
                 self.rid,
+                parse(self.source_definition['start_date']).strftime("%Y%m%d"),
+                parse(self.source_definition['end_date']).strftime("%Y%m%d"),
             )
         )
         resp.raise_for_status()
@@ -70,6 +72,10 @@ class ParlaeusMeetingitemsExtractor(ParlaeusMeetingsExtractor, HttpRequestMixin)
 
         for meeting in meetings:
             # todo test for last_change before processing
+
+            if not meeting['agid']:
+                log.error("The value for 'agid' seems to be empty, skipping")
+                continue
 
             resp = self.http_session.get(
                 '%s?rid=%s&fn=agenda_detail&agid=%s' % (
